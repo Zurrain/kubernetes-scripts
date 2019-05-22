@@ -16,7 +16,7 @@ _get_containers() {
 }
 
 _get_namespace() {
-    kubectl get deployments ${1} -o yaml | yq .metadata.namespace | tr -d '"'
+    kubectl get pods ${1} -o jsonpath='{.metadata.namespace}'
 }
 
 _open_kube_shell() {
