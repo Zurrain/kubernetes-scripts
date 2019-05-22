@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+_usage() {
+    echo "kube-shell pod-prefix container"
+    echo "ie: kube-shell ripple ripple" 
+    echo "leaving container blank uses default container"
+}
+
+
+_get_pod_id() {
+    kubectl get pods --no-headers --sort-by=.metadata.creationTimestamp | grep -i ${1} | grep -i Running | tail -n 1 | cut -d' ' -f1
+}
+
+_get_containers() {
+    kubectl get pods ${1}  -o jsonpath='{.spec.containers[*].name}' | tr -cd ' ' | wc -c
+}
+
+_get_namespace() {
+    kubectl get deployments ${1} -o yaml | yq .metadata.namespace | tr -d '"'
+}
+
+_open_kube_shell() {
+    if [[ -z ${2+x} ]]; then
+        kubectl exec -it ${1} -- /bin/bash
+    else
+        kubectl exec -it ${1} --container ${2} -- /bin/bash
+    fi
+}
+
+
+if [[ -z ${1+x} ]]; then
+    _usage
+else
+    namespace=$(_get_namespace ${1})
+    pod_id=$(_get_pod_id ${1})
+    echo "Opening shell for ${pod_id} in ${namespace}" 
+    _open_kube_shell ${pod_id} ${2}
+fi
