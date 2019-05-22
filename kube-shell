@@ -2,7 +2,7 @@
 
 _usage() {
     echo "kube-shell pod-prefix container"
-    echo "ie: kube-shell ripple ripple" 
+    echo "ie: kube-shell wordpress php-fpm" 
     echo "leaving container blank uses default container"
 }
 
